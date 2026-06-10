@@ -133,60 +133,58 @@ h1,h2,h3 { font-family: 'DM Serif Display', serif; font-weight: 400; }
 /* ── Score tables ── */
 .score-table-wrap, .rub-ms-wrap { overflow-x: auto; }
 .score-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.score-table th { background: #1a2332; color: #f0ede6; padding: 8px 8px; text-align: center; font-weight: 500; white-space: nowrap; }
+.score-table th { background: #fff; color: #000; padding: 8px 8px; text-align: center; font-weight: 700; white-space: nowrap; border: 1px solid #000; }
 .score-table th.name-th { text-align: left; min-width: 130px; }
-.score-table td { border: 1px solid var(--border); padding: 5px 6px; text-align: center; vertical-align: middle; }
-.score-table td.name-td { text-align: left; font-weight: 500; background: var(--bg2); font-size: 13px; }
-.score-table td.avg-td { font-weight: 700; background: var(--accent-lt); color: var(--accent); }
+.score-table td { border: 1px solid #000; padding: 5px 6px; text-align: center; vertical-align: middle; background: #fff; color: #000; }
+.score-table td.name-td { text-align: left; font-weight: 500; background: #fff; color: #000; font-size: 13px; }
+.score-table td.avg-td { font-weight: 700; background: #fff; color: #000; }
 .score-btns { display: flex; gap: 3px; justify-content: center; }
-.sc { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--border2); background: var(--bg); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.1s; color: var(--ink2); }
-.sc.s1.on { background: #fde8e8; border-color: #e57373; color: #c0392b; }
-.sc.s2.on { background: var(--amber-lt); border-color: #e8a44a; color: var(--amber); }
-.sc.s3.on { background: #e3f0fb; border-color: #6aabe8; color: #185FA5; }
-.sc.s4.on { background: var(--accent-lt); border-color: #6abf8a; color: var(--accent); }
+.sc { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid #000; background: #fff; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.1s; color: #000; }
+.sc.s1.on { background: #fff; border-color: #000; color: #000; font-weight: 900; text-decoration: underline; }
+.sc.s2.on { background: #fff; border-color: #000; color: #000; font-weight: 900; text-decoration: underline; }
+.sc.s3.on { background: #fff; border-color: #000; color: #000; font-weight: 900; text-decoration: underline; }
+.sc.s4.on { background: #fff; border-color: #000; color: #000; font-weight: 900; text-decoration: underline; }
 
 /* ── Rubric multi-student ── */
 .rub-desc-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 480px; margin-bottom: 20px; }
-.rub-desc-table th { background: #1a2332; color: #f0ede6; padding: 7px 9px; font-weight: 500; font-size: 12px; text-align: left; }
-.rub-desc-table td { border: 0.5px solid var(--border); padding: 6px 8px; vertical-align: top; font-size: 12px; line-height: 1.5; }
-.rub-desc-table td:first-child { font-weight: 600; background: var(--bg2); min-width: 100px; }
-.rub-desc-table td.d1 { } .rub-desc-table td.d2 { }
-.rub-desc-table td.d3 { } .rub-desc-table td.d4 { }
+.rub-desc-table th { background: #fff; color: #000; padding: 7px 9px; font-weight: 700; font-size: 12px; text-align: left; border: 1px solid #000; }
+.rub-desc-table td { border: 1px solid #000; padding: 6px 8px; vertical-align: top; font-size: 12px; line-height: 1.5; background: #fff; color: #000; }
+.rub-desc-table td:first-child { font-weight: 600; background: #fff; min-width: 100px; }
 .rub-reg-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 480px; }
-.rub-reg-table th { background: #1a2332; color: #f0ede6; padding: 5px 3px; font-weight: 500; font-size: 10px; text-align: center; border: 0.5px solid #2a3a52; }
+.rub-reg-table th { background: #fff; color: #000; padding: 5px 3px; font-weight: 700; font-size: 10px; text-align: center; border: 1px solid #000; }
 .rub-reg-table th.name-th { text-align: left; min-width: 120px; padding-left: 8px; }
-.rub-reg-table td { border: 0.5px solid var(--border); text-align: center; vertical-align: middle; padding: 0; }
-.rub-reg-table td.name-td { text-align: left; padding: 6px 8px; font-weight: 500; font-size: 12px; background: var(--bg2); }
-.rub-reg-table td.total-td { font-weight: 700; font-size: 13px; background: var(--bg2); color: var(--ink); min-width: 36px; }
-.rub-reg-table td.sep-col { background: #1a2332; width: 3px; padding: 0; border: none; }
-.x-mark { width: 100%; height: 30px; background: transparent; border: none; cursor: pointer; font-size: 13px; font-weight: 700; color: transparent; transition: all 0.1s; display: block; }
-.x-mark:hover { background: var(--bg2); color: var(--ink3); }
-.x-mark.on { color: var(--ink); background: #d4f0e0; }
-.sec-label { font-size: 11px; font-weight: 700; color: var(--ink2); text-transform: uppercase; letter-spacing: 0.04em; margin: 16px 0 7px; }
+.rub-reg-table td { border: 1px solid #000; text-align: center; vertical-align: middle; padding: 0; background: #fff; }
+.rub-reg-table td.name-td { text-align: left; padding: 6px 8px; font-weight: 500; font-size: 12px; background: #fff; color: #000; }
+.rub-reg-table td.total-td { font-weight: 700; font-size: 13px; background: #fff; color: #000; min-width: 36px; }
+.rub-reg-table td.sep-col { background: #000; width: 3px; padding: 0; border: none; }
+.x-mark { width: 100%; height: 30px; background: #fff; border: none; cursor: pointer; font-size: 13px; font-weight: 700; color: transparent; transition: all 0.1s; display: block; }
+.x-mark:hover { background: #f0f0f0; color: #999; }
+.x-mark.on { color: #000; background: #fff; font-weight: 900; }
+.sec-label { font-size: 11px; font-weight: 700; color: #000; text-transform: uppercase; letter-spacing: 0.04em; margin: 16px 0 7px; }
 
 /* ── Estimacion multi-student ── */
 .est-ms-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 380px; }
-.est-ms-table th { background: #1a2332; color: #f0ede6; padding: 5px 3px; font-weight: 500; font-size: 10px; text-align: center; border: 0.5px solid #2a3a52; }
+.est-ms-table th { background: #fff; color: #000; padding: 5px 3px; font-weight: 700; font-size: 10px; text-align: center; border: 1px solid #000; }
 .est-ms-table th.name-th { text-align: left; min-width: 120px; padding-left: 8px; }
-.est-ms-table td { border: 0.5px solid var(--border); text-align: center; vertical-align: middle; padding: 0; }
-.est-ms-table td.name-td { text-align: left; padding: 6px 8px; font-weight: 500; font-size: 12px; background: var(--bg2); }
-.est-ms-table td.sep-col { background: #1a2332; width: 3px; padding: 0; border: none; }
-.ex-btn { width: 100%; height: 30px; background: transparent; border: none; cursor: pointer; font-size: 12px; font-weight: 700; color: transparent; transition: all 0.1s; display: block; }
-.ex-btn:hover { background: var(--bg2); color: var(--ink3); }
-.ex-btn.e0.on { background: #e8f3ec; color: var(--accent); }
-.ex-btn.e1.on { background: var(--amber-lt); color: var(--amber); }
-.ex-btn.e2.on { background: #fde8e8; color: #c0392b; }
+.est-ms-table td { border: 1px solid #000; text-align: center; vertical-align: middle; padding: 0; background: #fff; }
+.est-ms-table td.name-td { text-align: left; padding: 6px 8px; font-weight: 500; font-size: 12px; background: #fff; color: #000; }
+.est-ms-table td.sep-col { background: #000; width: 3px; padding: 0; border: none; }
+.ex-btn { width: 100%; height: 30px; background: #fff; border: none; cursor: pointer; font-size: 12px; font-weight: 700; color: transparent; transition: all 0.1s; display: block; }
+.ex-btn:hover { background: #f0f0f0; color: #999; }
+.ex-btn.e0.on { background: #fff; color: #000; font-weight: 900; }
+.ex-btn.e1.on { background: #fff; color: #000; font-weight: 900; }
+.ex-btn.e2.on { background: #fff; color: #000; font-weight: 900; }
 
 /* ── Anecdotal ── */
 .anec-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.anec-table th { background: #1a2332; color: #f0ede6; padding: 8px 10px; text-align: left; font-weight: 500; }
-.anec-table td { border: 1px solid var(--border); padding: 0; }
-.anec-table td.name-cell { padding: 7px 9px; font-weight: 500; min-width: 130px; background: var(--bg2); font-size: 13px; }
-.anec-table td textarea { width: 100%; border: none; padding: 7px 9px; font-family: 'DM Sans', sans-serif; font-size: 13px; resize: none; outline: none; min-height: 48px; background: transparent; color: var(--ink); }
+.anec-table th { background: #fff; color: #000; padding: 8px 10px; text-align: left; font-weight: 700; border: 1px solid #000; }
+.anec-table td { border: 1px solid #000; padding: 0; background: #fff; }
+.anec-table td.name-cell { padding: 7px 9px; font-weight: 500; min-width: 130px; background: #fff; color: #000; font-size: 13px; }
+.anec-table td textarea { width: 100%; border: none; padding: 7px 9px; font-family: 'DM Sans', sans-serif; font-size: 13px; resize: none; outline: none; min-height: 48px; background: transparent; color: #000; }
 
 /* ── Numeric ── */
-.num-input { width: 54px; text-align: center; padding: 4px 3px; border: 1px solid var(--border2); border-radius: 6px; font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--ink); outline: none; }
-.num-input:focus { border-color: var(--accent); }
+.num-input { width: 54px; text-align: center; padding: 4px 3px; border: 1px solid #000; border-radius: 6px; font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; background: #fff; color: #000; outline: none; }
+.num-input:focus { border-color: #000; }
 
 /* ── Export ── */
 .export-bar { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 18px; }
@@ -240,7 +238,7 @@ h1,h2,h3 { font-family: 'DM Serif Display', serif; font-weight: 400; }
   .btn-generate, .criteria-item .ci-del, .btn-add-crit, .panel:not(.active), .loading-overlay { display: none !important; }
   body { background: #fff; font-size: 11px; }
   .card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
-  .score-table th, .rub-desc-table th, .rub-reg-table th, .anec-table th, .est-ms-table th { background: #1a2332 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .score-table th, .rub-desc-table th, .rub-reg-table th, .anec-table th, .est-ms-table th { background: #fff !important; color: #000 !important; border: 1px solid #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 </style>
 </head>
