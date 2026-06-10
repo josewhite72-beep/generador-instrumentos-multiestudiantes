@@ -520,7 +520,7 @@ LEARNING OUTCOMES:
 Responde SOLO en JSON sin markdown:
 {"criterios":[{"nombre":"criterio","d1":"Deficiente","d2":"Regular","d3":"Satisfactorio","d4":"Bueno"}]}
 
-En español.`,
+IMPORTANTE: Todos los descriptores deben estar redactados en positivo — describen LO QUE EL ESTUDIANTE HACE o logra en cada nivel, nunca en negativo (evita "no logra", "no puede", "no demuestra", "carece de", "falla en", etc.). Incluso el nivel 1 (Deficiente) debe describir el intento o desempeño mínimo observable. En español.`,
     promptExtract: `Eres un asistente educativo. Extrae los learning outcomes o indicadores de logro del skill "{skill}" del siguiente planeamiento educativo de Panamá.
 
 PLANEAMIENTO:
@@ -607,7 +607,7 @@ LEARNING OUTCOMES:
 Respond ONLY in JSON without markdown:
 {"criterios":[{"nombre":"criterion","d1":"Poor","d2":"Fair","d3":"Good","d4":"Excellent"}]}
 
-In English.`,
+IMPORTANT: All descriptors must be written in positive language — they describe WHAT THE STUDENT DOES or achieves at each level, never in negative terms (avoid "does not", "cannot", "fails to", "lacks", "is unable to", etc.). Even level 1 (Poor) must describe the minimum observable attempt or performance. In English.`,
     promptExtract: `You are an educational assistant. Extract the learning outcomes or achievement indicators for the skill "{skill}" from the following Panama educational lesson plan.
 
 LESSON PLAN:
@@ -717,7 +717,15 @@ async function handlePlanFile(e){
 async function extractOutcomes(text){
   syncState();
   const skill=state.skill||'';
-  const prompt=t('promptExtract').replace('{skill}',skill).replace('{text}',text.slice(0,6000));
+  const prompt=`You are an educational assistant. Extract the learning outcomes or achievement indicators for the skill "${skill}" from the following lesson plan.
+
+LESSON PLAN:
+${text.slice(0,6000)}
+
+Respond ONLY in JSON without markdown:
+{"outcomes":["outcome 1","outcome 2","outcome 3"]}
+
+IMPORTANT: Extract the outcomes EXACTLY as they appear in the document. Do NOT translate. Keep the original language of the document. Maximum 8 outcomes.`;
   const model=document.getElementById('model-select').value;
   try {
     const res=await fetch(PROXY,{method:'POST',headers:{'Content-Type':'application/json'},
