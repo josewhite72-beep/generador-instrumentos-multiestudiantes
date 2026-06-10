@@ -13,7 +13,7 @@
 <!-- PDF.js for PDF parsing -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
 <!-- docx.js for Word export -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.min.js"></script>
+<script src="https://unpkg.com/docx@8.5.0/build/index.umd.js"></script>
 <style>
 :root {
   --bg: #f5f3ee; --bg2: #eceae3; --card: #ffffff;
@@ -1015,7 +1015,8 @@ function updateTotal(si){ const vals=state.criteria.map((_,ci)=>parseFloat(state
 function exportPDF(){ window.print(); showToast(t('printToast')); }
 
 async function exportWord(){
-  const { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, WidthType, AlignmentType, BorderStyle, HeadingLevel } = docx;
+  if(typeof docx === 'undefined'){ showToast('⚠️ Librería Word no cargada — recarga la página'); return; }
+  const { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, WidthType, AlignmentType, BorderStyle, HeadingLevel, PageOrientation } = docx;
 
   const border = { style: BorderStyle.SINGLE, size: 8, color: '000000' };
   const cellBorders = { top: border, bottom: border, left: border, right: border };
@@ -1173,16 +1174,29 @@ async function exportWord(){
   try {
     const doc = new Document({
       sections: [{
-        properties: { page: { size: { orientation: state.type==='rubrica'||state.type==='estimacion' ? 'landscape' : 'portrait' } } },
+        properties: { page: { size: { orientation: (state.type==='rubrica'||state.type==='estimacion') ? PageOrientation.LANDSCAPE : PageOrientation.PORTRAIT } } },
         children: sections
       }]
     });
     const blob = await Packer.toBlob(doc);
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `instrumento_${state.grade}_${state.skill||'eval'}.docx`.replace(/\s+/g,'_');
-    a.click();
-    showToast('📝 Word descargado');
+    const filename = `instrumento_${state.grade}_${state.skill||'eval'}.docx`.replace(/\s+/g,'_');
+    const url = URL.createObjectURL(blob);
+
+    // Open in new tab — works in PWA standalone on Android
+    // Android will prompt "Open with Word / Drive / etc"
+    const newTab = window.open(url, '_blank');
+    if(!newTab){
+      // Fallback: direct download link
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    showToast('📝 Abriendo Word…');
   } catch(err) {
     showToast('⚠️ Error al generar Word');
     console.error(err);
