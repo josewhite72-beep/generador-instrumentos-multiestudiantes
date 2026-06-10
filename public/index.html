@@ -12,6 +12,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <!-- PDF.js for PDF parsing -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+<!-- docx.js for Word export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.umd.min.js"></script>
 <style>
 :root {
   --bg: #f5f3ee; --bg2: #eceae3; --card: #ffffff;
@@ -410,6 +412,7 @@ h1,h2,h3 { font-family: 'DM Serif Display', serif; font-weight: 400; }
     <div class="card" id="instrument-body"></div>
     <div class="export-bar">
       <button class="btn-export primary" onclick="exportPDF()" id="btn-exp-pdf">📄 PDF</button>
+      <button class="btn-export" onclick="exportWord()" id="btn-exp-word">📝 Word</button>
       <button class="btn-export" onclick="exportCSV()" id="btn-exp-csv">📊 CSV</button>
       <button class="btn-export" onclick="saveTemplate()" id="btn-save-tpl">💾 Plantilla</button>
       <button class="btn-export" onclick="shareLink()" id="btn-share">🔗 Compartir</button>
@@ -1010,6 +1013,181 @@ function updateTotal(si){ const vals=state.criteria.map((_,ci)=>parseFloat(state
 
 // ── Exports ──
 function exportPDF(){ window.print(); showToast(t('printToast')); }
+
+async function exportWord(){
+  const { Document, Packer, Paragraph, Table, TableRow, TableCell, TextRun, WidthType, AlignmentType, BorderStyle, HeadingLevel } = docx;
+
+  const border = { style: BorderStyle.SINGLE, size: 8, color: '000000' };
+  const cellBorders = { top: border, bottom: border, left: border, right: border };
+  const noBorder = { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' };
+
+  function cell(text, opts={}) {
+    return new TableCell({
+      borders: cellBorders,
+      width: opts.width ? { size: opts.width, type: WidthType.DXA } : undefined,
+      rowSpan: opts.rowSpan,
+      columnSpan: opts.columnSpan,
+      shading: { fill: 'FFFFFF' },
+      children: [new Paragraph({
+        alignment: opts.center ? AlignmentType.CENTER : AlignmentType.LEFT,
+        children: [new TextRun({ text: String(text||''), bold: opts.bold||false, size: opts.size||20, font: 'Arial' })]
+      })]
+    });
+  }
+
+  const sections = [];
+  const meta = [state.grade, state.section, state.skill, state.activity, state.date].filter(Boolean).join(' · ');
+
+  // ── Title ──
+  sections.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [new TextRun({ text: typeLabel(state.type), bold: true, size: 28, font: 'Arial' })] }));
+  sections.push(new Paragraph({ children: [new TextRun({ text: meta, size: 20, font: 'Arial', color: '555555' })] }));
+  sections.push(new Paragraph({ children: [] }));
+
+  if (state.type === 'rubrica') {
+    const crits = state.rubricaCriteria || state.criteria.map(n=>({nombre:n,d1:'',d2:'',d3:'',d4:''}));
+    const lvlLabels = [`1—${t('rubDef')}`, `2—${t('rubReg2')}`, `3—${t('rubSat')}`, `4—${t('rubBue')}`];
+    const lvlKeys = ['d1','d2','d3','d4'];
+
+    // Part 1 header
+    sections.push(new Paragraph({ children: [new TextRun({ text: t('rubDesc').toUpperCase(), bold: true, size: 20, font: 'Arial' })] }));
+    sections.push(new Paragraph({ children: [] }));
+
+    // Descriptor table
+    const descRows = [
+      new TableRow({ children: [
+        cell(t('criterionLabel'), {bold:true, width:2000}),
+        ...lvlLabels.map(l => cell(l, {bold:true, center:true}))
+      ]})
+    ];
+    crits.forEach((c,ci) => {
+      descRows.push(new TableRow({ children: [
+        cell(c.nombre, {bold:true, width:2000}),
+        ...lvlKeys.map(k => cell(state.scores[`rdesc-${ci}-${k}`] || c[k] || ''))
+      ]}));
+    });
+    sections.push(new Table({ rows: descRows, width: { size: 100, type: WidthType.PERCENTAGE } }));
+    sections.push(new Paragraph({ children: [] }));
+
+    // Part 2 header
+    sections.push(new Paragraph({ children: [new TextRun({ text: t('rubReg').toUpperCase(), bold: true, size: 20, font: 'Arial' })] }));
+    sections.push(new Paragraph({ children: [] }));
+
+    // Register table — header row 1 (criterion groups)
+    const abbrs = [t('rubD'), t('rubR'), t('rubS'), t('rubB')];
+    const regHeaderRow1 = new TableRow({ children: [
+      cell(t('colStudent'), {bold:true, rowSpan:2, width:2200}),
+      ...crits.flatMap((c,ci) => [
+        new TableCell({
+          borders: cellBorders,
+          columnSpan: 4,
+          shading: { fill: 'FFFFFF' },
+          children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: c.nombre, bold: true, size: 18, font: 'Arial' })] })]
+        })
+      ]),
+      cell(t('colTotal'), {bold:true, rowSpan:2, center:true, width:600})
+    ]});
+
+    // Header row 2 (D R S B sub-headers)
+    const regHeaderRow2 = new TableRow({ children: [
+      ...crits.flatMap(() =>
+        abbrs.map((a,i) => cell(`${a}\n${i+1}`, {bold:true, center:true, size:16}))
+      )
+    ]});
+
+    const regRows = [regHeaderRow1, regHeaderRow2];
+    state.students.forEach((s,si) => {
+      let total = 0, allMarked = true;
+      const dataCells = crits.flatMap((_,ci) => {
+        const mk = state.scores[`rm-${si}-${ci}`] || 0;
+        if(mk > 0) total += mk; else allMarked = false;
+        return abbrs.map((_,lvi) => cell(mk===(lvi+1)?'X':'', {center:true, size:18}));
+      });
+      regRows.push(new TableRow({ children: [
+        cell(s, {width:2200}),
+        ...dataCells,
+        cell(allMarked ? String(total) : '—', {center:true, bold:true})
+      ]}));
+    });
+    sections.push(new Table({ rows: regRows, width: { size: 100, type: WidthType.PERCENTAGE } }));
+
+  } else if (state.type === 'cotejo') {
+    const headerRow = new TableRow({ children: [
+      cell(t('colStudent'), {bold:true, width:2200}),
+      ...state.criteria.map(c => cell(c, {bold:true, center:true})),
+      cell(t('colAvg'), {bold:true, center:true, width:700})
+    ]});
+    const dataRows = state.students.map((s,si) => {
+      const vals = state.criteria.map((_,ci) => state.scores[`${si}-${ci}`]||0).filter(v=>v>0);
+      const avg = vals.length ? (vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(1) : '—';
+      return new TableRow({ children: [
+        cell(s, {width:2200}),
+        ...state.criteria.map((_,ci) => cell(state.scores[`${si}-${ci}`]||'', {center:true})),
+        cell(avg, {center:true, bold:true})
+      ]});
+    });
+    sections.push(new Table({ rows: [headerRow,...dataRows], width: { size: 100, type: WidthType.PERCENTAGE } }));
+
+  } else if (state.type === 'estimacion') {
+    const opts = [t('estSFull'), t('estAFull'), t('estNFull')];
+    const h1 = new TableRow({ children: [
+      cell(t('colStudent'), {bold:true, rowSpan:2, width:2200}),
+      ...state.criteria.flatMap(c => [new TableCell({ borders: cellBorders, columnSpan:3, shading:{fill:'FFFFFF'}, children:[new Paragraph({alignment:AlignmentType.CENTER,children:[new TextRun({text:c,bold:true,size:18,font:'Arial'})]})]})])
+    ]});
+    const h2 = new TableRow({ children: [
+      ...state.criteria.flatMap(() => opts.map(o => cell(o.slice(0,2), {bold:true, center:true, size:16})))
+    ]});
+    const dataRows = state.students.map((s,si) => new TableRow({ children: [
+      cell(s, {width:2200}),
+      ...state.criteria.flatMap((_,ci) => opts.map((_,oi) => cell(state.scores[`em-${si}-${ci}`]===(oi+1)?'X':'', {center:true})))
+    ]}));
+    sections.push(new Table({ rows: [h1,h2,...dataRows], width: { size: 100, type: WidthType.PERCENTAGE } }));
+
+  } else if (state.type === 'numerica') {
+    const headerRow = new TableRow({ children: [
+      cell(t('colStudent'), {bold:true, width:2200}),
+      ...state.criteria.map(c => cell(c, {bold:true, center:true})),
+      cell(t('colTotal'), {bold:true, center:true, width:700})
+    ]});
+    const dataRows = state.students.map((s,si) => {
+      const vals = state.criteria.map((_,ci) => parseFloat(state.scores[`num-${si}-${ci}`])||0);
+      return new TableRow({ children: [
+        cell(s, {width:2200}),
+        ...state.criteria.map((_,ci) => cell(state.scores[`num-${si}-${ci}`]||'', {center:true})),
+        cell(vals.reduce((a,b)=>a+b,0).toFixed(0), {center:true, bold:true})
+      ]});
+    });
+    sections.push(new Table({ rows: [headerRow,...dataRows], width: { size: 100, type: WidthType.PERCENTAGE } }));
+
+  } else if (state.type === 'anecdotico') {
+    const headerRow = new TableRow({ children: [
+      cell(t('colStudent'), {bold:true, width:2200}),
+      cell(t('colObs'), {bold:true})
+    ]});
+    const dataRows = state.students.map((s,si) => new TableRow({ children: [
+      cell(s, {width:2200}),
+      cell(state.scores[`anec-${si}`]||'')
+    ]}));
+    sections.push(new Table({ rows: [headerRow,...dataRows], width: { size: 100, type: WidthType.PERCENTAGE } }));
+  }
+
+  try {
+    const doc = new Document({
+      sections: [{
+        properties: { page: { size: { orientation: state.type==='rubrica'||state.type==='estimacion' ? 'landscape' : 'portrait' } } },
+        children: sections
+      }]
+    });
+    const blob = await Packer.toBlob(doc);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `instrumento_${state.grade}_${state.skill||'eval'}.docx`.replace(/\s+/g,'_');
+    a.click();
+    showToast('📝 Word descargado');
+  } catch(err) {
+    showToast('⚠️ Error al generar Word');
+    console.error(err);
+  }
+}
 
 function exportCSV(){
   syncState();
